@@ -1,5 +1,4 @@
 #include <stdint.h>
-#include <stdbool.h>
 #include <stdio.h>
 
 void print_b(uint8_t *in, uint16_t n);
@@ -60,7 +59,7 @@ uint16_t bit_stuffer(
   for(i=0; i<N; i++){
     // Input bit loop
     for(b=7; b>=0; b--){
-      bit = in[i]&(1<<b); // anything > 0 is a bit
+      bit = in[i]&(1<<b); // anything > 0 is a 1
 
       if (bit){
         // Bit is a 1
