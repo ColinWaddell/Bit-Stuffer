@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <stdbool.h>
 #include <stdio.h>
 
 void print_b(uint8_t *in, uint16_t n);
@@ -16,6 +17,10 @@ void print_b(uint8_t *in, uint16_t N) {
       putchar('0' + ((in[n]>> (i-1)) & 1));
     }
   }
+}
+
+void bit_stuffer_bit_inc(uint8_t *b){
+  
 }
 
 /* Takes input array 'in' of length 'N' and
@@ -40,40 +45,52 @@ void print_b(uint8_t *in, uint16_t N) {
  * The +1 is for good luck.
  */
 uint16_t bit_stuffer(
-    uint8_t *in,
-    uint8_t *out,
-    uint16_t N)
+                     uint8_t *in,
+                     uint8_t *out,
+                     uint16_t N)
 {
-  uint16_t i      = 0;  // input byte counter
-  uint16_t o      = 0;  // output byte counter
-  int8_t   b      = 0;  // input bit counter
-  uint16_t out_b  = 7;  // output bit counter
-  uint8_t  one_n  = 0;  // number of consequtive ones
-  uint8_t  bit    = 0;  // current bit
-
-  // Always clear the next output byte
-  // so you don't have to 'write' zeros
+  uint16_t i      = 0;        // input byte counter
+  uint16_t o      = 0xFFFF;   // output byte counter
+  int8_t   b      = 0;        // input bit counter
+  uint16_t out_b  = 7;        // bit position of output
+  uint8_t  one_n  = 0;        // number of consequtive ones
+  uint8_t  bit    = 0;        // current bit
+  uint8_t first   = 1;
+  
+  /* o is initialised with 0xFFFF to force
+   * it to equal 0 on the first loop. This
+   * ensures the correct number of bytes
+   * are reported back.
+   */
+  
+  /* Always clear the next output byte
+   * so you don't have to 'write' zeros
+   */
   out[0] = 0;
-
+  
   // Input byte loop
   for(i=0; i<N; i++){
     // Input bit loop
     for(b=7; b>=0; b--){
-      bit = in[i]&(1<<b); // anything > 0 is a 1
-
+      if(out_b==7){
+        o = (o+1)&0xFFFF;
+        out[o] = 0;
+      }
+      first = 0;
+      bit = in[i]&(1<<b); // anything > 0 is a bit
+      
       if (bit){
         // Bit is a 1
         out[o] |= (1<<out_b);
         one_n++;
         if(one_n==BIT_STUFF_ONES){
-          // Update output counters to
-          // bit stuff an extra 0.
+          // Update output counters to bit-stuff
           out_b = (out_b-1)&0x07;
           if(out_b==7){
-            o++;
+            o = (o+1)&0xFFFF;
             out[o] = 0;
           }
-
+          
           one_n = 0; // Reset counter
         }
       }
@@ -82,47 +99,43 @@ uint16_t bit_stuffer(
         // Reset counter
         one_n = 0;
       }
-
       // Update output counters
       out_b = (out_b-1)&0x07;
-      if(out_b==7){
-        o++;
-        out[o] = 0;
-      }
     }
   }
-
-  return o;
+  
+  return o+1;
 }
 
 int main(void){
   // Sample data
   uint8_t in[] =
-    { 0b00111110,
-      0b00101010,
-      0b10111111,
-      0b10101000,
-      0b11110000,
-      0b00111111,
-      0b10101111,
-      0b10000000 };
-
+  { 0b00111110,
+    0b00101010,
+    0b10111111,
+    0b10101000,
+    0b11110000,
+    0b00111111,
+    0b10101111,
+    0b10000000 };
+  
   // See above for calculation for length of out.
   uint8_t out[sizeof(in)+(sizeof(in)/5)+1];
   // Length of output after bit-stuffing
   uint16_t out_n;
-
+  
   // Print input data
   printf("input data:\n");
   print_b(in, sizeof(in));
-
+  
   // Stuff them bits
   out_n = bit_stuffer(in, out, sizeof(in));
-
+  
   // Print output data
   printf("\noutput data:\n");
   print_b(out, out_n);
-
+  printf("\nNumber of output bytes: %d\n", out_n);
+  
   return 0;
 }
 
@@ -131,8 +144,8 @@ int main(void){
  * > input data:
  * > 0011111000101010101111111010100011110000001111111010111110000000
  * > output data:
- * > 0011111000010101010111110110101000111100000011111011010111110000
+ * > 001111100001010101011111011010100011110000001111101101011111000000000000
  *
  * Correct output:
- *   0011111000010101010111110110101000111100000011111011010111110000
+ *   001111100001010101011111011010100011110000001111101101011111000000000000
  */
