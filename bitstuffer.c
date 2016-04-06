@@ -47,7 +47,7 @@ uint16_t bit_stuffer(
   uint16_t i      = 0;  // input byte counter
   uint16_t o      = 0;  // output byte counter
   int8_t   b      = 0;  // input bit counter
-  uint16_t out_b  = 7;  // bit position of output
+  uint16_t out_b  = 7;  // output bit counter
   uint8_t  one_n  = 0;  // number of consequtive ones
   uint8_t  bit    = 0;  // current bit
 
@@ -66,7 +66,8 @@ uint16_t bit_stuffer(
         out[o] |= (1<<out_b);
         one_n++;
         if(one_n==BIT_STUFF_ONES){
-          // Update output counters to bit-stuff
+          // Update output counters to
+          // bit stuff an extra 0.
           out_b = (out_b-1)&0x07;
           if(out_b==7){
             o++;
