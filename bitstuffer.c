@@ -9,7 +9,10 @@ uint32_t bit_stuffer(uint8_t *in, uint8_t *out, uint32_t N);
 #define BIT_STUFF_ONES 5
 
 /* Print array 'in' with length 'N' as binary stream */
-void print_b(uint8_t *in, uint32_t N) {
+void print_b(
+  uint8_t *in,
+  uint32_t N)
+{
   uint8_t b=7;
   uint16_t i=0;
   while(N--){
@@ -42,9 +45,10 @@ void print_b(uint8_t *in, uint32_t N) {
  *
  * The +1 is for good luck.
  */
-uint32_t bit_stuffer(uint8_t *in,
-    uint8_t *out,
-    uint32_t N)
+uint32_t bit_stuffer(
+  uint8_t *in,
+  uint8_t *out,
+  uint32_t N)
 {
   uint16_t i      = 0;        /* input byte counter         */
   uint16_t o      = 0xFFFF;   /* output byte counter        */
