@@ -56,7 +56,7 @@ uint32_t bit_stuffer(
   uint16_t out_b  = 7;        /* bit position of output     */
   uint8_t  one_n  = 0;        /* number of consequtive ones */
   uint8_t  bit    = 0;        /* current bit                */
-  uint32_t out_N = 0;
+  uint32_t out_N  = 0;        /* number of output bits      */
 
   /* o is initialised with 0xFFFF to force
    * it to equal 0 on the first loop. This
